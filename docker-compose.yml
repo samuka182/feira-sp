@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+  db:
+    image: postgis/postgis:14-3.2-alpine
+    restart: always
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  app:
+    image: 'feirasp:latest'
+    build:
+      context: ./app
+    container_name: app
+    depends_on:
+      - db
+    environment:
+      - FEIRASP_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres?currentSchema=feira_app
+      - FEIRASP_DATASOURCE_USERNAME=feirasp_user
+      - FEIRASP_DATASOURCE_PASSWORD=feirasp_pass
+      - FLYWAY_DATABASE_URL=jdbc:postgresql://db:5432/postgres
+      - FLYWAY_DATABASE_USER=postgres
+      - FLYWAY_DATABASE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    volumes:
+      - ${PWD}/logs:/logs
+      - m2Repo:/root/.m2
+
+volumes:
+  m2Repo:
+    driver: local
+  db:
+    driver: local
