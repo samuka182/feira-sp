@@ -7,15 +7,11 @@ import javax.persistence.Table
 
 @Entity
 @Table(
-    name = "sub_prefeitura",
-    indexes = [Index(
-        name = "sub_prefeitura_external_identifier_un",
-        columnList = "identificador_externo",
-        unique = true
+    name = "sub_prefeitura", indexes = [Index(
+        name = "sub_prefeitura_external_identifier_un", columnList = "identificador_externo", unique = true
     )]
 )
 data class SubPrefeitura(
-    @field:Column(
-        name = "nome", nullable = false, length = 36
-    ) var nome: String? = null
+    @field:Column(name = "nome", nullable = false, length = 36) var nome: String,
+    @field:Column(name = "identificador_externo", length = 32) var identificadorExterno: String? = null,
 ) : EntidadeBase()

@@ -2,7 +2,6 @@ package br.com.samuka182.feirasp.entities
 
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.springframework.data.geo.Point
 import javax.persistence.*
 
 @Entity
@@ -13,6 +12,7 @@ import javax.persistence.*
 )
 data class FeiraLivre(
     @field:Column(name = "nome", nullable = false, length = 36) var nome: String? = null,
+    @field:Column(name = "identificador_externo", length = 32) var identificadorExterno: String? = null,
     @field:ManyToOne(
         fetch = FetchType.LAZY,
         optional = false
@@ -27,7 +27,8 @@ data class FeiraLivre(
         name = "sub_prefeitura_id",
         nullable = false
     ) var subPrefeitura: SubPrefeitura? = null,
-    @field:Column(name = "localizacao", columnDefinition = "point") var localizacao: Point? = null,
+    @field:Column(name = "latitude") var latitude: Int? = null,
+    @field:Column(name = "longitude") var longitude: Int? = null,
     @field:Column(name = "setor_censo") var setorCenso: Long? = null,
     @field:Column(name = "area_ponderacao") var areaPonderacao: Long? = null,
     @field:Column(name = "regiao5", nullable = false, length = 12) var regiao5: String? = null,
