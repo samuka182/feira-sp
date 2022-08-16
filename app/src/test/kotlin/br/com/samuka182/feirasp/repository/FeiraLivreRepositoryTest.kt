@@ -33,26 +33,24 @@ class FeiraLivreRepositoryTest {
     }
 
     @Test
-    fun `pesquisa feira por identificador externo`() = assertDoesNotThrow {
+    fun `pesquisa feira por identificador`() = assertDoesNotThrow {
         feiraLivreRepository.save(gerarFeiraLivre()).also {
-            assertNotNull(feiraLivreRepository.findByIdentificadorExterno("1"))
+            assertTrue(feiraLivreRepository.findById(1).isPresent)
         }
     }
 
     @Test
-    fun `pesquisa feira por identificador externo inexistente`() =
-        assertNull(feiraLivreRepository.findByIdentificadorExterno("000"))
+    fun `pesquisa feira por identificador inexistente`() =
+        assertFalse(feiraLivreRepository.findById(100).isPresent)
 
     @Test
     fun `atualiza dados de uma feira com sucesso`() = assertDoesNotThrow {
         feiraLivreRepository.save(gerarFeiraLivre()).also {
             feiraLivreRepository.findById(it.id!!).get().let { feira ->
                 feira.nome = "FEIRA ATUALIZADA"
-                feira.identificadorExterno = "101"
 
                 feiraLivreRepository.save(feira).let { feiraAtualizada ->
                     assertEquals("FEIRA ATUALIZADA", feiraAtualizada.nome)
-                    assertEquals("101", feiraAtualizada.identificadorExterno)
                     assertEquals(feira.id, feiraAtualizada.id)
                     assertEquals(feira.criadoEm, feiraAtualizada.criadoEm)
                 }
@@ -71,27 +69,28 @@ class FeiraLivreRepositoryTest {
         }
     }
 
-    private fun gerarFeiraLivre(): FeiraLivre = FeiraLivre().apply {
-        nome = "VILA FORMOSA"
-        identificadorExterno = "1"
-        distrito = salvarDistrito()
-        subPrefeitura = salvarSubPrefeitura()
-        areaPonderacao = 3550308005040
-        setorCenso = 355030885000091
-        latitude = -23558733
-        longitude = -46550164
-        regiao5 = "Leste"
-        regiao8 = "Leste 1"
-        registro = "4041-0"
-        logradouro = "RUA MARAGOJIPE"
-        numero = null
-        bairro = "VL FORMOSA"
-        referencia = "TV RUA PRETORIA"
-    }
+    private fun gerarFeiraLivre(): FeiraLivre = FeiraLivre(
+        id = 1,
+        nome = "VILA FORMOSA",
+        distrito = salvarDistrito(),
+        subPrefeitura = salvarSubPrefeitura(),
+        areaPonderacao = 3550308005040,
+        setorCenso = 355030885000091,
+        latitude = -23558733,
+        longitude = -46550164,
+        regiao5 = "Leste",
+        regiao8 = "Leste 1",
+        registro = "4041-0",
+        logradouro = "RUA MARAGOJIPE",
+        numero = null,
+        bairro = "VL FORMOSA",
+        referencia = "TV RUA PRETORIA",
+    )
 
     private fun salvarDistrito(): Distrito =
-        distritoRepository.save(Distrito("VILA FORMOSA", "87"))
+        distritoRepository.save(Distrito(id = 87, nome = "VILA FORMOSA"))
 
     private fun salvarSubPrefeitura(): SubPrefeitura =
-        subPrefeituraRepository.save(SubPrefeitura("ARICANDUVA-FORMOSA-CARRAO", "26"))
+        subPrefeituraRepository.save(SubPrefeitura(id = 26, nome = "ARICANDUVA-FORMOSA-CARRAO"))
 }
+

@@ -27,13 +27,13 @@ class DistritoRepositoryTest {
     @Test
     fun `pesquisa distrito por identificador externo`() = assertDoesNotThrow {
         distritoRepository.save(gerarDistrito()).also {
-            assertNotNull(distritoRepository.findByIdentificadorExterno("100"))
+            assertTrue(distritoRepository.findById(100).isPresent)
         }
     }
 
     @Test
     fun `pesquisa distrito por identificador externo inexistente`() =
-        assertNull(distritoRepository.findByIdentificadorExterno("111"))
+        assertFalse(distritoRepository.findById(111).isPresent)
 
     @Test
     fun `deleta um distrito com sucesso`() = assertDoesNotThrow {
@@ -48,25 +48,19 @@ class DistritoRepositoryTest {
 
     @Test
     fun `atualiza dados de distrito`() = assertDoesNotThrow {
-        distritoRepository.save(gerarDistrito()).let { distrito ->
-            val copia = Distrito().apply {
-                id = distrito.id
-                nome = distrito.nome
-                identificadorExterno = distrito.identificadorExterno
-                criadoEm = distrito.criadoEm
-                atualizadoEm = distrito.atualizadoEm
-            }
-            distrito.nome = "DISTRITO ATUALIZADO"
-            distritoRepository.save(distrito).let {
-                assertEquals(copia.id, it.id)
-                assertNotEquals(copia.nome, it.nome)
-                assertEquals(copia.identificadorExterno, it.identificadorExterno)
-                assertEquals(copia.criadoEm, it.criadoEm)
-                //assertNotEquals(copia.atualizadoEm, it.atualizadoEm)
+        distritoRepository.save(gerarDistrito()).let { distritoSalvo ->
+            val atualizadoEm = distritoSalvo.atualizadoEm
+            distritoRepository.save(distritoSalvo.copy(nome = "DISTRITO ATUALIZADO")).let { distritoAtualizado ->
+                assertEquals(distritoSalvo.id, distritoAtualizado.id)
+                assertEquals("DISTRITO ATUALIZADO", distritoAtualizado.nome)
+                assertEquals(distritoSalvo.criadoEm, distritoAtualizado.criadoEm)
+                assertNotEquals(atualizadoEm, distritoAtualizado.atualizadoEm)
             }
         }
     }
 
-    private fun gerarDistrito(): Distrito = Distrito("DISTRITO TESTE", "100")
+    private fun gerarDistrito(): Distrito = Distrito(
+        nome = "DISTRITO TESTE", id = 100
+    )
 
 }

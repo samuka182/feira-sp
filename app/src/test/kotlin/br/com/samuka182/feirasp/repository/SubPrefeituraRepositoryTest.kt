@@ -1,10 +1,7 @@
 package br.com.samuka182.feirasp.repository
 
 import br.com.samuka182.feirasp.entities.SubPrefeitura
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,18 +25,18 @@ class SubPrefeituraRepositoryTest {
     }
 
     @Test
-    fun `busca uma sub prefeitura existente pelo identificador externo`() {
+    fun `busca uma sub prefeitura existente pelo identificador`() {
         subPrefeituraRepository.save(gerarSubPrefeitura())
-        val subPrefeitura = subPrefeituraRepository.findByIdentificadorExterno("100")
+        val subPrefeitura = subPrefeituraRepository.findById(100)
 
-        assertNotNull(subPrefeitura)
+        assertTrue(subPrefeitura.isPresent)
     }
 
     @Test
-    fun `busca uma sub prefeitura com identificador externo inexistente`() {
-        val subPrefeitura = subPrefeituraRepository.findByIdentificadorExterno("111")
+    fun `busca uma sub prefeitura com identificador inexistente`() {
+        val subPrefeitura = subPrefeituraRepository.findById(111)
 
-        assertNull(subPrefeitura)
+        assertFalse(subPrefeitura.isPresent)
     }
 
     @Test
@@ -57,16 +54,18 @@ class SubPrefeituraRepositoryTest {
     @Test
     fun `atualiza dados de sub prefeitura`() {
         val subPrefeituraSalva = subPrefeituraRepository.save(gerarSubPrefeitura())
-            .copy("SUB PREFREITURA ATUALIZADA")
         val atualizadoEm = subPrefeituraSalva.atualizadoEm
-        val subPrefeituraSAtualizada = subPrefeituraRepository.save(subPrefeituraSalva)
+        val subPrefeituraAtualizada = subPrefeituraRepository.save(subPrefeituraSalva.copy(nome = "SUB PREFREITURA ATUALIZADA"))
 
-        assertEquals(subPrefeituraSalva.id, subPrefeituraSAtualizada.id)
-        assertEquals(subPrefeituraSalva.criadoEm, subPrefeituraSAtualizada.criadoEm)
-        assertNotEquals(atualizadoEm, subPrefeituraSAtualizada.atualizadoEm)
-        assertEquals("SUB PREFREITURA ATUALIZADA", subPrefeituraSAtualizada.nome)
+        assertEquals(subPrefeituraSalva.id, subPrefeituraAtualizada.id)
+        assertEquals(subPrefeituraSalva.criadoEm, subPrefeituraAtualizada.criadoEm)
+        assertNotEquals(atualizadoEm, subPrefeituraAtualizada.atualizadoEm)
+        assertEquals("SUB PREFREITURA ATUALIZADA", subPrefeituraAtualizada.nome)
     }
 
-    private fun gerarSubPrefeitura(): SubPrefeitura = SubPrefeitura("SUB PREFREITURA TESTE", "100")
+    private fun gerarSubPrefeitura(): SubPrefeitura = SubPrefeitura(
+        nome = "SUB PREFREITURA TESTE",
+        id = 100
+    )
 
 }

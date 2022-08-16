@@ -10,8 +10,6 @@ CREATE ROLE feirasp_user WITH
 	CONNECTION LIMIT -1
 	PASSWORD 'feirasp_pass';
 
-CREATE EXTENSION postgis;
-
 GRANT CONNECT ON DATABASE postgres TO feirasp_user;
 GRANT USAGE ON SCHEMA feira_app TO feirasp_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA feira_app TO feirasp_user;

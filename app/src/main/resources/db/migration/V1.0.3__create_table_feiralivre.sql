@@ -1,10 +1,9 @@
 CREATE TABLE feira_app.feira_livre
 (
-    id uuid,
-    identificador_externo character varying(32),
+    id integer NOT NULL,
     nome character varying(36) NOT NULL,
-    distrito_id uuid NOT NULL,
-    sub_prefeitura_id uuid NOT NULL,
+    distrito_id integer NOT NULL,
+    sub_prefeitura_id integer NOT NULL,
     latitude integer,
     longitude integer,
     setor_censo bigint,
@@ -20,6 +19,7 @@ CREATE TABLE feira_app.feira_livre
     atualizado_em time without time zone NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT feira_livre_nome_un UNIQUE (nome),
+    CONSTRAINT feira_livre_registro_un UNIQUE (registro),
     CONSTRAINT distrito_fk FOREIGN KEY (distrito_id)
         REFERENCES feira_app.distrito (id) MATCH SIMPLE
         ON UPDATE NO ACTION

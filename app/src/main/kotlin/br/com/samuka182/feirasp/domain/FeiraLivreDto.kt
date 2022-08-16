@@ -4,14 +4,14 @@ import java.io.Serializable
 import java.time.LocalDateTime
 
 data class FeiraLivreDto(
-    val id: String? = null,
+    val id: Int? = null,
     val registro: String? = null,
     val criadoEm: LocalDateTime? = null,
     val atualizadoEm: LocalDateTime? = null,
     val nome: String? = null,
-    val codDistrito: String? = null,
+    val codDistrito: Int? = null,
     val nomeDistrito: String? = null,
-    val codSubPrefeitura: String? = null,
+    val codSubPrefeitura: Int? = null,
     val nomeSubPrefeitura: String? = null,
     val latitude: Int? = null,
     val longitude: Int? = null,

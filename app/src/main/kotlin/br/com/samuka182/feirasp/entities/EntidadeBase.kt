@@ -1,21 +1,21 @@
 package br.com.samuka182.feirasp.entities
 
 import java.time.LocalDateTime
-import java.util.*
-import javax.persistence.*
+import javax.persistence.Id
+import javax.persistence.MappedSuperclass
+import javax.persistence.PrePersist
+import javax.persistence.PreUpdate
 
 @MappedSuperclass
-abstract class EntidadeBase(
-    @field:Id @field:Column(name = "id", nullable = false) var id: UUID? = null,
-    @field:Column(name = "criado_em", nullable = false) var criadoEm: LocalDateTime? = null,
-    @field:Column(name = "atualizado_em", nullable = false) var atualizadoEm: LocalDateTime? = null
+open class EntidadeBase(
+    var criadoEm: LocalDateTime? = null,
+    var atualizadoEm: LocalDateTime? = null,
 ) {
     @PrePersist
     fun prePersist() {
-        id = UUID.randomUUID()
-        LocalDateTime.now().let { now ->
-            criadoEm = now
-            atualizadoEm = now
+        LocalDateTime.now().let {
+            criadoEm = it
+            atualizadoEm = it
         }
     }
 
