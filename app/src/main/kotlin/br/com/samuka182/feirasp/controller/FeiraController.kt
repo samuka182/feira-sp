@@ -1,8 +1,9 @@
 package br.com.samuka182.feirasp.controller
 
+import br.com.samuka182.feirasp.api.FeiraApi
 import br.com.samuka182.feirasp.domain.FeiraLivreDto
+import br.com.samuka182.feirasp.domain.MensagemRetorno
 import br.com.samuka182.feirasp.domain.PesquisaFeiraParametros
-import br.com.samuka182.feirasp.domain.RetornoDto
 import br.com.samuka182.feirasp.service.FeiraService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,22 +11,22 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/feira", produces = ["application/json"])
-class FeiraController(val feiraService: FeiraService) {
+class FeiraController(val feiraService: FeiraService) : FeiraApi {
 
     @PostMapping
-    fun salvar(@RequestBody body: FeiraLivreDto) =
+    override fun salvar(@RequestBody body: FeiraLivreDto) =
         ResponseEntity<FeiraLivreDto>(feiraService.salvarFeira(body), HttpStatus.CREATED)
 
     @PatchMapping
-    fun atualizar(@RequestBody body: FeiraLivreDto) =
+    override fun atualizar(@RequestBody body: FeiraLivreDto) =
         ResponseEntity<FeiraLivreDto>(feiraService.atualizarFeira(body), HttpStatus.OK)
 
     @GetMapping
-    fun pesquisa(
-        @RequestParam distrito: String? = null,
-        @RequestParam regiao5: String? = null,
-        @RequestParam(name = "nome_feira") nomeFeira: String? = null,
-        @RequestParam bairro: String? = null
+    override fun pesquisa(
+        @RequestParam distrito: String?,
+        @RequestParam regiao5: String?,
+        @RequestParam(name = "nome_feira") nomeFeira: String?,
+        @RequestParam bairro: String?
     ) = ResponseEntity<List<FeiraLivreDto>>(
         feiraService.pesquisarFeira(
             PesquisaFeiraParametros(
@@ -35,7 +36,7 @@ class FeiraController(val feiraService: FeiraService) {
     )
 
     @DeleteMapping("/{registro}")
-    fun delete(@PathVariable registro: String) =
-        ResponseEntity<RetornoDto>(feiraService.deletarFeira(registro), HttpStatus.OK)
+    override fun delete(@PathVariable registro: String) =
+        ResponseEntity<MensagemRetorno>(feiraService.deletarFeira(registro), HttpStatus.OK)
 
 }

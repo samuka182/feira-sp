@@ -3,7 +3,7 @@ FROM maven:3.8.6-eclipse-temurin-17-alpine as builder
 COPY ./pom.xml ./app/pom.xml
 COPY ./src ./app/src
 
-RUN mvn --batch-mode -f /app/pom.xml clean package
+RUN mvn --batch-mode -f /app/pom.xml clean verify package
 
 RUN java -Djarmode=layertools -jar app/target/*.jar extract
 RUN addgroup appgroup; adduser --ingroup appgroup --disabled-password app -u 1000 -g 100

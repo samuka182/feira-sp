@@ -8,7 +8,7 @@ import javax.persistence.*
     name = "feira_livre", indexes = [
         Index(name = "idx_bairro_feira", columnList = "bairro"),
         Index(name = "feira_livre_registro_un", columnList = "registro", unique = true),
-        Index(name = "feira_livre_nome_un", columnList = "nome", unique = true),
+        Index(name = "idx_nome_feira", columnList = "nome"),
         Index(name = "idx_regiao5", columnList = "regiao5")
     ]
 )
@@ -16,10 +16,10 @@ data class FeiraLivre(
     @Id
     var id: Int? = null,
     var nome: String? = null,
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "distrito_id")
     var distrito: Distrito? = null,
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_prefeitura_id")
     var subPrefeitura: SubPrefeitura? = null,
     var latitude: Int? = null,

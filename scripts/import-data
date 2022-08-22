@@ -1,0 +1,33 @@
+#!/bin/bash
+
+saida=$(jq --slurp --raw-input \
+   'split("\n")
+   | .[1:-1]
+   | map(split(","))
+   | map({
+       "id": .[0]|tonumber,
+       "nome": .[11],
+       "codDistrito": .[5]|tonumber,
+       "nomeDistrito": .[6],
+       "codSubPrefeitura": .[7]|tonumber,
+       "nomeSubPrefeitura": .[8],
+       "areaPonderacao": .[4]|tonumber,
+       "setorCenso": .[3]|tonumber,
+       "latitude": .[2]|tonumber,
+       "longitude": .[1]|tonumber,
+       "regiao5": .[9],
+       "regiao8": .[10],
+       "registro": .[12],
+       "logradouro": .[13],
+       "numero": .[14],
+       "bairro": .[15],
+       "referencia": .[16]
+      })' \
+  DEINFO_AB_FEIRASLIVRES_2014.csv)
+
+for linha in $(echo "${saida}" | jq -r '.[] | @base64'); do
+  body=$(echo "$linha" | base64 --decode)
+  curl --silent --output /dev/null -X POST -H "Content-Type: application/json" --data "$body" http://localhost:8080/api/feira
+done
+echo "importacao finalizada"
+

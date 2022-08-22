@@ -18,7 +18,6 @@ CREATE TABLE feira_app.feira_livre
     criado_em time without time zone NOT NULL,
     atualizado_em time without time zone NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT feira_livre_nome_un UNIQUE (nome),
     CONSTRAINT feira_livre_registro_un UNIQUE (registro),
     CONSTRAINT distrito_fk FOREIGN KEY (distrito_id)
         REFERENCES feira_app.distrito (id) MATCH SIMPLE
@@ -36,6 +35,7 @@ ALTER TABLE IF EXISTS feira_app.feira_livre
     OWNER to postgres;
 
 CREATE INDEX idx_bairro_feira ON feira_app.feira_livre(bairro);
+CREATE INDEX idx_nome_feira ON feira_app.feira_livre(nome);
 CREATE INDEX idx_regiao5 ON feira_app.feira_livre(regiao5);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON feira_app.feira_livre TO feirasp_user;

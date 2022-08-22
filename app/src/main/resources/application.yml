@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: ${FEIRASP_DATASOURCE_URL:#{'jdbc:postgresql://localhost:5432/postgres?currentSchema=feira_app'}}
+    url: jdbc:postgresql://${FEIRASP_DATASOURCE_HOST:localhost}:5432/postgres?currentSchema=feira_app
     username: ${FEIRASP_DATASOURCE_USERNAME:feirasp_user}
     password: ${FEIRASP_DATASOURCE_PASSWORD:feirasp_pass}
   flyway:
-    url: ${FLYWAY_DATABASE_URL:#{'jdbc:postgresql://localhost:5432/postgres'}}
+    url: jdbc:postgresql://${FLYWAY_DATASOURCE_HOST:localhost}:5432/postgres
     user: ${FLYWAY_DATABASE_USER:postgres}
     password: ${FLYWAY_DATABASE_PASSWORD:postgres}
+springdoc:
+  api-docs:
+    path: /api-docs

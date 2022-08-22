@@ -3,6 +3,8 @@ package br.com.samuka182.feirasp.service
 import br.com.samuka182.feirasp.domain.FeiraLivreDto
 import br.com.samuka182.feirasp.domain.PesquisaFeiraParametros
 import br.com.samuka182.feirasp.exceptions.BusinessException
+import br.com.samuka182.feirasp.exceptions.FeiraLivreExistenteException
+import br.com.samuka182.feirasp.exceptions.FeiraLivreNaoEncontradaException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -21,19 +23,34 @@ class FeiraServiceTest {
     @Test
     fun `salvar nova feira livre`() {
         assertDoesNotThrow {
+            assertEquals(null, salvarFeira(gerarFeiraLivreDto()).numero)
+        }
+        deletarFeira("4041-0")
+    }
+
+    @Test
+    fun `erro ao salvar feira livre com identificador existente`() {
+        salvarFeira(gerarFeiraLivreDto())
+        assertThrows<FeiraLivreExistenteException> {
             salvarFeira(gerarFeiraLivreDto())
         }
+        deletarFeira("4041-0")
     }
 
     @Test
     fun `pesquisa feiras salvas`() {
-        salvarMultiplasFeiras()
+        salvarFeira(gerarFeiraLivreDto())
+        salvarFeira(gerarFeiraLivre2Dto())
+
         assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(codDistrito = "87")).size)
         assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA")).size)
         assertEquals(
             1,
             feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA", nome = "VILA FORMOSA")).size
         )
+
+        deletarFeira("4041-0")
+        deletarFeira("4041-1")
     }
 
     @Test
@@ -45,6 +62,8 @@ class FeiraServiceTest {
             assertEquals("DISTRITO TESTE", it.nomeDistrito)
             assertEquals(99, it.codDistrito)
         }
+
+        deletarFeira("4041-0")
     }
 
     @Test
@@ -62,11 +81,26 @@ class FeiraServiceTest {
             assertEquals("SUB PREFEITURA TESTE", it.nomeSubPrefeitura)
             assertEquals(99, it.codSubPrefeitura)
         }
+
+        deletarFeira("4041-0")
     }
 
     @Test
-    fun `erro BusinessException ao atualizar uma feira livre com identificador inexistente`() {
-        assertThrows<BusinessException> {
+    fun `erro ao atualizar feira livre com identificador inexistente`() {
+        assertThrows<FeiraLivreNaoEncontradaException> {
+            feiraService.atualizarFeira(
+                FeiraLivreDto(
+                    id = 1,
+                    codSubPrefeitura = 99,
+                    nomeSubPrefeitura = "SUB PREFEITURA TESTE"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `erro FeiraLivreNaoEncontradaException ao atualizar uma feira livre com identificador inexistente`() {
+        assertThrows<FeiraLivreNaoEncontradaException> {
             feiraService.atualizarFeira(FeiraLivreDto(id = 999, nome = "TESTE ALTERAR"))
         }
     }
@@ -78,32 +112,28 @@ class FeiraServiceTest {
         assertThrows<BusinessException> {
             feiraService.atualizarFeira(FeiraLivreDto(id = 1, registro = "1234-5"))
         }
+        deletarFeira("4041-0")
     }
 
     @Test
     fun `sucesso ao deletar uma feira com registro existente`() {
         salvarFeira(gerarFeiraLivreDto())
 
-        assertDoesNotThrow{
+        assertDoesNotThrow {
             feiraService.deletarFeira("4041-0")
         }
     }
 
     @Test
-    fun `erro BusinessException ao deletar uma feira com registro inexistente`() {
-        salvarFeira(gerarFeiraLivreDto())
-
-        assertThrows<BusinessException> {
+    fun `erro FeiraLivreNaoEncontradaException ao deletar uma feira com registro inexistente`() {
+        assertThrows<FeiraLivreNaoEncontradaException> {
             feiraService.deletarFeira("9999-9")
         }
     }
 
     private fun salvarFeira(feiraLivreDto: FeiraLivreDto) = feiraService.salvarFeira(feiraLivreDto)
 
-    private fun salvarMultiplasFeiras() {
-        salvarFeira(gerarFeiraLivreDto())
-        salvarFeira(gerarFeiraLivre2Dto())
-    }
+    private fun deletarFeira(registro: String) = feiraService.deletarFeira(registro)
 
     private fun gerarFeiraLivreDto(): FeiraLivreDto = FeiraLivreDto(
         nome = "VILA FORMOSA",
@@ -120,7 +150,7 @@ class FeiraServiceTest {
         regiao8 = "Leste 1",
         registro = "4041-0",
         logradouro = "RUA MARAGOJIPE",
-        numero = null,
+        numero = "S/N",
         bairro = "VL FORMOSA",
         referencia = "TV RUA PRETORIA",
     )
@@ -140,7 +170,7 @@ class FeiraServiceTest {
         regiao8 = "Leste 1",
         registro = "4041-1",
         logradouro = "RUA MARAGOJIPE",
-        numero = null,
+        numero = "123",
         bairro = "VL FORMOSA",
         referencia = "TV RUA PRETORIA",
     )

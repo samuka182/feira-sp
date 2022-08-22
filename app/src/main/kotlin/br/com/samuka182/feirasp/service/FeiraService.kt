@@ -1,12 +1,14 @@
 package br.com.samuka182.feirasp.service
 
 import br.com.samuka182.feirasp.domain.FeiraLivreDto
+import br.com.samuka182.feirasp.domain.MensagemRetorno
 import br.com.samuka182.feirasp.domain.PesquisaFeiraParametros
-import br.com.samuka182.feirasp.domain.RetornoDto
 import br.com.samuka182.feirasp.entities.Distrito
 import br.com.samuka182.feirasp.entities.FeiraLivre
 import br.com.samuka182.feirasp.entities.SubPrefeitura
 import br.com.samuka182.feirasp.exceptions.BusinessException
+import br.com.samuka182.feirasp.exceptions.FeiraLivreExistenteException
+import br.com.samuka182.feirasp.exceptions.FeiraLivreNaoEncontradaException
 import br.com.samuka182.feirasp.repository.DistritoRepository
 import br.com.samuka182.feirasp.repository.FeiraLivreRepository
 import br.com.samuka182.feirasp.repository.SubPrefeituraRepository
@@ -32,7 +34,7 @@ class FeiraService(
     fun salvarFeira(feiraLivreDto: FeiraLivreDto): FeiraLivreDto =
         withLoggingContext("acao" to "salvar", "id" to feiraLivreDto.id?.toString(), "nome" to feiraLivreDto.nome) {
             logger.info { "Iniciando salvar feira" }
-            return salvaOuAtualizaFeira(feiraLivreDto.converteParaEntidade()).converteParaDto().also {
+            return salvaFeira(feiraLivreDto.converteParaEntidade()).converteParaDto().also {
                 logger.info { "Finalizando salvar feira" }
             }
         }
@@ -42,23 +44,23 @@ class FeiraService(
         withLoggingContext("acao" to "atualizar", "id" to feiraLivreDto.id?.toString(), "nome" to feiraLivreDto.nome) {
             logger.info { "validando operacao de atualizacao" }
             feiraLivreDto.validaAtualizacaoFeira()
-            return salvaOuAtualizaFeira(feiraLivreDto.converteParaEntidade()).converteParaDto().also {
+            return atualizaFeira(feiraLivreDto.converteParaEntidade()).converteParaDto().also {
                 logger.info { "Finalizando atualizar feira" }
             }
         }
 
     @Transactional
-    fun deletarFeira(codRegistro: String): RetornoDto =
+    fun deletarFeira(codRegistro: String): MensagemRetorno =
         withLoggingContext("acao" to "deletar", "codRegistro" to codRegistro) {
             logger.info { "iniciando validacao de delecao" }
             feiraLivreRepository.findByRegistro(codRegistro).let { feiraBase ->
                 when (feiraBase) {
-                    null -> throw BusinessException("Feira nao encontrada pelo codigo de registro")
+                    null -> throw FeiraLivreNaoEncontradaException()
                     else -> withLoggingContext("id" to feiraBase.id?.toString(), "nome" to feiraBase.nome) {
                         logger.info { "iniciando operacao de delecao" }
                         feiraLivreRepository.delete(feiraBase)
                         logger.info { "finalizando operacao de delecao" }
-                        return@let RetornoDto(200, "sucesso")
+                        return@let MensagemRetorno(200, "feira deletada com sucesso")
                     }
                 }
             }
@@ -77,7 +79,7 @@ class FeiraService(
             this.registro?.let { if (it != feiraBase.registro) throw BusinessException("Nao e possivel alterar o codigo de registro") }
             logger.info { "operacao validada com sucesso" }
         } catch (ns: NoSuchElementException) {
-            throw BusinessException("Feira nao encontrada pelo identificador")
+            throw FeiraLivreNaoEncontradaException()
         }
     }
 
@@ -90,7 +92,7 @@ class FeiraService(
         )
     }
 
-    private fun salvaOuAtualizaFeira(feiraLivre: FeiraLivre): FeiraLivre {
+    private fun atualizaFeira(feiraLivre: FeiraLivre): FeiraLivre {
         feiraLivreRepository.findById(feiraLivre.id!!).let { feiraBase ->
             if (feiraBase.isPresent) {
                 val feira = feiraBase.get()
@@ -114,13 +116,16 @@ class FeiraService(
                 feiraLivre.referencia?.let { feira.referencia = it }
 
                 return feiraLivreRepository.save(feira)
-            } else {
-                feiraLivre.distrito = validaDistrito(feiraLivre.distrito)
-                feiraLivre.subPrefeitura = validaSubPrefeitura(feiraLivre.subPrefeitura)
-
-                return feiraLivreRepository.save(feiraLivre)
-            }
+            } else throw FeiraLivreNaoEncontradaException()
         }
+    }
+
+    private fun salvaFeira(feiraLivre: FeiraLivre): FeiraLivre {
+        if (feiraLivreRepository.findById(feiraLivre.id!!).isPresent) throw FeiraLivreExistenteException()
+        feiraLivre.distrito = validaDistrito(feiraLivre.distrito)
+        feiraLivre.subPrefeitura = validaSubPrefeitura(feiraLivre.subPrefeitura)
+
+        return feiraLivreRepository.save(feiraLivre)
     }
 
     private fun validaDistrito(distrito: Distrito?): Distrito? {
@@ -165,7 +170,7 @@ class FeiraService(
             areaPonderacao = this.areaPonderacao,
             logradouro = this.logradouro,
             referencia = this.referencia,
-            numero = this.numero,
+            numero = this.numero?.toIntIfNumber(),
         )
     }
 
@@ -187,11 +192,15 @@ class FeiraService(
             areaPonderacao = this.areaPonderacao,
             logradouro = this.logradouro,
             referencia = this.referencia,
-            numero = this.numero,
+            numero = this.numero?.toString(),
             criadoEm = this.atualizadoEm,
             atualizadoEm = this.criadoEm,
         )
     }
+
+    private fun String.toIntIfNumber(): Int? = kotlin.runCatching {
+        return this.toDouble().toInt()
+    }.getOrDefault(null)
 
     private fun FeiraLivreDto.converteParaEntidadeDistrito(): Distrito {
         return Distrito(
@@ -204,5 +213,4 @@ class FeiraService(
             nome = nomeSubPrefeitura, id = codSubPrefeitura
         )
     }
-
 }
