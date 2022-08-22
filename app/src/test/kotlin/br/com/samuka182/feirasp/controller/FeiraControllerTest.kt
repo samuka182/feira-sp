@@ -47,13 +47,6 @@ class FeiraControllerTest {
     }
 
     @Test
-    fun `listar feiras - sucesso`() {
-        every { feiraService.pesquisarFeira(any()) } returns mockk()
-
-        assertEquals(HttpStatus.OK, feiraController.pesquisa().statusCode)
-    }
-
-    @Test
     fun `deletar feira - sucesso`() {
         every { feiraService.deletarFeira(any()) } returns mockk()
 

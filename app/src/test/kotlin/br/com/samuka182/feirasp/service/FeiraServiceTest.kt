@@ -12,6 +12,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Pageable
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
@@ -42,11 +43,11 @@ class FeiraServiceTest {
         salvarFeira(gerarFeiraLivreDto())
         salvarFeira(gerarFeiraLivre2Dto())
 
-        assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(codDistrito = "87")).size)
-        assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA")).size)
+        assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(codDistrito = "87"), Pageable.ofSize(20)).size)
+        assertEquals(2, feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA"), Pageable.ofSize(20)).size)
         assertEquals(
             1,
-            feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA", nome = "VILA FORMOSA")).size
+            feiraService.pesquisarFeira(PesquisaFeiraParametros(bairro = "VL FORMOSA", nome = "VILA FORMOSA"), Pageable.ofSize(20)).size
         )
 
         deletarFeira("4041-0")

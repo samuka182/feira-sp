@@ -16,6 +16,9 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.ExampleMatcher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import javax.transaction.Transactional
 
@@ -67,10 +70,10 @@ class FeiraService(
         }
 
     @Transactional
-    fun pesquisarFeira(parametrosBusca: PesquisaFeiraParametros): List<FeiraLivreDto> {
+    fun pesquisarFeira(parametrosBusca: PesquisaFeiraParametros, pageable: Pageable): Page<FeiraLivreDto> {
         val exampleMatcher = ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnoreCase()
-        return feiraLivreRepository.findAll(Example.of(de(parametrosBusca), exampleMatcher))
-            .map { feira -> feira.converteParaDto() }.toList()
+        return feiraLivreRepository.findAll(Example.of(de(parametrosBusca), exampleMatcher), pageable)
+            .map { feira -> feira.converteParaDto() }
     }
 
     private fun FeiraLivreDto.validaAtualizacaoFeira() {
