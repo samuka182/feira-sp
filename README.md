@@ -26,32 +26,32 @@ d1449a7c74cd   postgres:14.5-alpine   "docker-entrypoint.s…"   6 seconds ago  
 
 ```
 
-##Acessando documentacao da API
+## Acessando documentacao da API
 
 Esta API segue a especificacao Open API 3. Acessando o link abaixo voce podera conferir todos os recursos disponiveis.
 
 [URL da especificacao OpenAPI 3](http://localhost:8080/swagger-ui/index.html#/feira-api)
 
-##Importanto a massa de dados
+## Importanto a massa de dados
 
 Para importar os dados das feiras mais recentes disponibilizados pela Prefeitura de SP pelo [link](http://www.prefeitura.sp.gov.br/cidade/secretarias/upload/chamadas/feiras_livres_1429113213.zip).
 Devera usar seu terminal Bash e executar o script "**import-data**" que se encontra dentro da pasta *[scripts](scripts)*
 
 ```shell
-[user@host feira-sp]$ cd scripts && ./import-data
+[user@host feira-sp]$ cd scripts && ./import-data && cd ..
 
 ```
 
-##Saida de logs
+## Saida de logs
 
 Os logs da aplicacao estao configurados para serem gravados de forma estruturada em arquivos. Os mesmos irao ser encontrados no diretorio *[logs](logs)* com o seguinte nome "**feirasp-app-json.log**"
 
-##Relatorio de cobertura de testes
+## Relatorio de cobertura de testes
 
 Para acessar o relatorio de cobertura de testes, basta executar o seguinte comando:
 
 ```shell
-[user@host feira-sp]$ cd app && ./mvnw clean verify
+[user@host feira-sp]$ cd app && ./mvnw clean verify && cd ..
 
 ```
 
