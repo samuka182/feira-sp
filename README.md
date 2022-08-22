@@ -2,9 +2,9 @@
 
 ## Pre requisitos
 
-- Docker: [saiba como instalar](https://docs.docker.com/engine/install/)
-- Docker-Compose: [saiba como instalar](https://docs.docker.com/compose/install/)
-- Bash: [utiliza Windows? Saiba como usar no seu sistema](https://www.thewindowsclub.com/how-to-run-sh-or-shell-script-file-in-windows-10)
+- Docker: [saiba como instalar](https://docs.docker.com/engine/install/){:target="_blank"}
+- Docker-Compose: [saiba como instalar](https://docs.docker.com/compose/install/){:target="_blank"}
+- Bash: [utiliza Windows? Saiba como usar no seu sistema](https://www.thewindowsclub.com/how-to-run-sh-or-shell-script-file-in-windows-10){:target="_blank"}
 
 ## Iniciando a aplicacao
 
@@ -30,11 +30,11 @@ d1449a7c74cd   postgres:14.5-alpine   "docker-entrypoint.s…"   6 seconds ago  
 
 Esta API segue a especificacao Open API 3. Acessando o link abaixo voce podera conferir todos os recursos disponiveis.
 
-[URL da especificacao OpenAPI 3](http://localhost:8080/swagger-ui/index.html#/feira-api)
+[URL da especificacao OpenAPI 3](http://localhost:8080/swagger-ui/index.html#/feira-api){:target="_blank"}
 
 ## Importanto a massa de dados
 
-Para importar os dados das feiras mais recentes disponibilizados pela Prefeitura de SP pelo [link](http://www.prefeitura.sp.gov.br/cidade/secretarias/upload/chamadas/feiras_livres_1429113213.zip).
+Para importar os dados das feiras mais recentes disponibilizados pela Prefeitura de SP pelo [link](http://www.prefeitura.sp.gov.br/cidade/secretarias/upload/chamadas/feiras_livres_1429113213.zip){:target="_blank"}.
 Devera usar seu terminal Bash e executar o script "**import-data**" que se encontra dentro da pasta *[scripts](scripts)*
 
 ```shell
